@@ -1,0 +1,63 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  package:
+    name: Flutter ${{ matrix.sdk }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - sdk: minimum
+            flutter-version: '3.24.0'
+          - sdk: stable
+            flutter-version: ''
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: ${{ matrix.flutter-version }}
+          cache: true
+      - run: flutter pub get
+      - run: dart format --line-length=120 --output=none --set-exit-if-changed lib test example/lib example/test
+      - run: flutter analyze
+      - run: flutter test
+      - name: Resolve lowest dependency versions
+        run: flutter pub downgrade
+      - name: Analyze lowest dependency versions
+        run: flutter analyze
+      - name: Test lowest dependency versions
+        run: flutter test
+      - name: Restore dependencies
+        run: flutter pub upgrade
+      - name: Resolve example dependencies
+        if: matrix.sdk == 'stable'
+        working-directory: example
+        run: flutter pub get
+      - name: Analyze example
+        if: matrix.sdk == 'stable'
+        working-directory: example
+        run: flutter analyze
+      - name: Test example
+        if: matrix.sdk == 'stable'
+        working-directory: example
+        run: flutter test
+      - name: Build web example
+        if: matrix.sdk == 'stable'
+        working-directory: example
+        run: flutter build web
+      - name: Validate package archive
+        if: matrix.sdk == 'stable'
+        run: flutter pub publish --dry-run
