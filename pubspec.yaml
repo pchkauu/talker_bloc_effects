@@ -1,0 +1,28 @@
+name: talker_bloc_effects
+description: A Talker observer for BLoC lifecycle logs and bloc_effects emissions, with source-aware filtering and configurable effect output.
+version: 0.1.0
+repository: https://github.com/pchkauu/talker_bloc_effects
+issue_tracker: https://github.com/pchkauu/talker_bloc_effects/issues
+topics:
+  - bloc
+  - cubit
+  - effects
+  - logging
+  - talker
+
+environment:
+  sdk: '>=3.5.0 <4.0.0'
+  flutter: '>=3.24.0'
+
+dependencies:
+  bloc: ^9.0.0
+  bloc_effects: ^2.1.0
+  flutter:
+    sdk: flutter
+  talker: ^5.1.20
+  talker_bloc_logger: ^5.1.20
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+  flutter_test:
+    sdk: flutter
